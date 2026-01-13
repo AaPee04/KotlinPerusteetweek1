@@ -4,17 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import android.util.Log
 import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -27,6 +23,8 @@ import com.example.kotlinperusteetweek1.domain.Task
 import com.example.kotlinperusteetweek1.domain.addTask
 import com.example.kotlinperusteetweek1.domain.sortByDueDate
 import com.example.kotlinperusteetweek1.domain.mockData
+import com.example.kotlinperusteetweek1.domain.toggleDone
+import com.example.kotlinperusteetweek1.domain.filterByDone
 import com.example.kotlinperusteetweek1.ui.theme.Kotlinperusteetweek1Theme
 
 class MainActivity : ComponentActivity() {
@@ -87,49 +85,62 @@ fun NameTextField(
 fun HomeScreen() {
     var name by remember { mutableStateOf("") }
     var tasklist by remember { mutableStateOf(mockData) }
+    var showOnlyDone by remember { mutableStateOf(false) } // false = näytetään kaikki
 
-    Column {
-        NameTextField(
-            name = name,
-            onNameChange = { name = it }
-        )
+    Column(modifier = Modifier.padding(16.dp)) {
+        NameTextField(name = name, onNameChange = { name = it })
 
+        Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tervehdys taas: $name")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Suodatettu lista
+        val displayedTasks = if (showOnlyDone) filterByDone(tasklist, true) else tasklist
+
+        displayedTasks.forEach { task ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(text = "${task.id} - ${task.title}")
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(onClick = { tasklist = toggleDone(tasklist, task.id) }) {
+                    Text(if (task.done) "Tehty" else "Tekemätön")
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        tasklist.forEach { task ->
-            Text(text = "${task.id} - Title: ${task.title}")
-        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = {
+                val newTask = Task(
+                    id = tasklist.size + 1,
+                    title = name,
+                    description = "Description",
+                    priority = 1,
+                    dueDate = "2023-10-31",
+                    done = false
+                )
+                tasklist = addTask(tasklist, newTask)
+            }) {
+                Text("Uusi task")
+            }
 
-        Row {
-            Button(
-                onClick = {
-                    val newTask = Task(
-                        id = tasklist.size + 1,
-                        title = name,
-                        description = "Description",
-                        priority = 1,
-                        dueDate = "2023-10-31",
-                        done = false
-                    )
-
-                    tasklist = addTask(tasklist, newTask)
-                }
-            ) {
-                Text("Lisää uusi task")
+            Button(onClick = { tasklist = sortByDueDate(tasklist) }) {
+                Text("DueDate sort")
             }
 
             Button(
-                onClick = {
-                    tasklist = tasklist.sortedBy { it.dueDate }
-
-                    tasklist = sortByDueDate(tasklist)
-                }
-
-
+                onClick = { showOnlyDone = !showOnlyDone },
+                modifier = Modifier.widthIn(min = 80.dp, max = 120.dp)
             ) {
-                Text("Sort by DueDate")
+                Text(
+                    text = if (showOnlyDone) "Kaikki" else "Tehdyt",
+                    maxLines = 1
+                )
             }
         }
     }
