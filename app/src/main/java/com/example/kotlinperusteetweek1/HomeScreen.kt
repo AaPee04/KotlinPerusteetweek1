@@ -22,18 +22,14 @@ fun HomeScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
                 value = newTaskTitle,
                 onValueChange = { newTaskTitle = it },
                 label = { Text("Uusi tehtävä") },
                 modifier = Modifier.weight(1f)
             )
-
             Spacer(modifier = Modifier.width(8.dp))
-
             Button(
                 onClick = {
                     if (newTaskTitle.isNotBlank()) {
@@ -43,76 +39,44 @@ fun HomeScreen(
                                 title = newTaskTitle,
                                 description = "",
                                 priority = 1,
-                                dueDate = "2026.1.31",
+                                dueDate = "2026.2.28",
                                 done = false
                             )
                         )
                         newTaskTitle = ""
                     }
                 }
-            ) {
-                Text("Lisää")
-            }
+            ) { Text("Lisää") }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = { showDoneOnly = !showDoneOnly }
-            ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { showDoneOnly = !showDoneOnly }) {
                 Text(if (showDoneOnly) "Näytä kaikki" else "Näytä valmiit")
             }
-
-            Button(
-                onClick = { viewModel.sortTasksByDueDate() }
-            ) {
+            Button(onClick = { viewModel.sortTasksByDueDate() }) {
                 Text("Järjestä eräpäivän mukaan")
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val tasksToShow = if (showDoneOnly) {
-            viewModel.getTasksByDone(true)
-        } else {
-            viewModel.tasks
-        }
+        val tasksToShow = if (showDoneOnly) viewModel.getTasksByDone(true) else viewModel.tasks
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(
-                items = tasksToShow,
-                key = { it.id }
-            ) { task ->
-
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(items = tasksToShow, key = { it.id }) { task ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
                     Checkbox(
                         checked = task.done,
-                        onCheckedChange = {
-                            viewModel.toggleDone(task.id)
-                        }
+                        onCheckedChange = { viewModel.toggleDone(task.id) }
                     )
-
-                    Text(
-                        text = "${task.title} - ${task.dueDate}",
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    IconButton(
-                        onClick = { viewModel.removeTask(task.id) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Poista"
-                        )
+                    Text(text = "${task.title} - ${task.dueDate}", modifier = Modifier.weight(1f))
+                    IconButton(onClick = { viewModel.removeTask(task.id) }) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Poista")
                     }
                 }
             }
