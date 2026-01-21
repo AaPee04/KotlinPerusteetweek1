@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.kotlinperusteetweek1.viewModel.TaskViewModel
@@ -22,6 +23,9 @@ fun HomeScreen(
     var showDoneOnly by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Text("Task Manager", style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
