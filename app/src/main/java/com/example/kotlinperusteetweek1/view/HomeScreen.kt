@@ -27,10 +27,18 @@ fun HomeScreen(
     var newTitle by remember { mutableStateOf("") }
     var newDescription by remember { mutableStateOf("") }
 
+    val visibleTasks = remember(tasks, showDoneOnly) {
+        if (showDoneOnly) {
+            tasks.filter { it.done }
+        } else {
+            tasks
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // musta tausta
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -38,7 +46,6 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
 
-            // Otsikko
             item {
                 Text(
                     text = "Tehtävälista",
@@ -48,7 +55,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Uuden tehtävän kentät
             item {
                 OutlinedTextField(
                     value = newTitle,
@@ -69,7 +75,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Painikkeet rivissä (punaiset)
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -78,16 +83,7 @@ fun HomeScreen(
                     Button(
                         onClick = {
                             if (newTitle.isNotBlank()) {
-                                viewModel.addTask(
-                                    Task(
-                                        id = tasks.size + 1,
-                                        title = newTitle,
-                                        description = newDescription,
-                                        priority = 1,
-                                        dueDate = "2026.2.10",
-                                        done = false
-                                    )
-                                )
+                                viewModel.addTask(newTitle, newDescription)
                                 newTitle = ""
                                 newDescription = ""
                             }
@@ -118,19 +114,15 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // Tehtävälista
-            items(
-                if (showDoneOnly)
-                    viewModel.getTasksByDone(true)
-                else
-                    tasks
-            ) { task ->
+            items(visibleTasks) { task ->
                 Card(
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                         .fillMaxWidth()
                         .clickable { viewModel.selectTask(task) },
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -146,17 +138,24 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                            Text(task.description, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
-                            Text(task.dueDate, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                            Text(
+                                task.description,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                            Text(
+                                task.dueDate,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
                         }
 
                         Checkbox(
                             checked = task.done,
-                            onCheckedChange = { viewModel.toggleDone(task.id) },
+                            onCheckedChange = {
+                                viewModel.toggleDone(task.id)
+                            },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color.Red,
-                                uncheckedColor = Color.Red,
-                                checkmarkColor = MaterialTheme.colorScheme.onBackground
+                                uncheckedColor = Color.Red
                             )
                         )
                     }
@@ -165,7 +164,6 @@ fun HomeScreen(
         }
     }
 
-    // DetailDialog logiikka
     selectedTask?.let { task ->
         DetailDialog(
             task = task,
