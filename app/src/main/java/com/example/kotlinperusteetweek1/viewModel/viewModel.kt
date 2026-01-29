@@ -1,39 +1,51 @@
 package com.example.kotlinperusteetweek1.viewModel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.kotlinperusteetweek1.domain.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import com.example.kotlinperusteetweek1.model.*
 
 class TaskViewModel : ViewModel() {
 
-    var tasks by mutableStateOf<List<Task>>(mockData)
-        private set
+    private val _tasks = MutableStateFlow<List<Task>>(mockData)
+    val tasks: StateFlow<List<Task>> = _tasks
 
-    init {
-        tasks = mockData
-    }
+    private val _selectedTask = MutableStateFlow<Task?>(null)
+    val selectedTask: StateFlow<Task?> = _selectedTask
 
     fun addTask(task: Task) {
-        tasks = tasks + task
+        _tasks.value = addTask(_tasks.value, task)
     }
 
-    fun toggleDone(id: Int) {
-        tasks = tasks.map {
-            if (it.id == id) it.copy(done = !it.done) else it
+    fun toggleDone(taskId: Int) {
+        _tasks.value = toggleDone(_tasks.value, taskId)
+    }
+
+    fun removeTask(taskId: Int) {
+        _tasks.value = removeTask(_tasks.value, taskId)
+        closeDialog()
+    }
+
+    fun updateTask(updatedTask: Task) {
+        _tasks.value = _tasks.value.map {
+            if (it.id == updatedTask.id) updatedTask else it
         }
-    }
-
-    fun removeTask(id: Int) {
-        tasks = tasks.filterNot { it.id == id }
+        closeDialog()
     }
 
     fun getTasksByDone(done: Boolean): List<Task> {
-        return filterByDone(tasks, done)
+        return filterByDone(_tasks.value, done)
     }
 
     fun sortTasksByDueDate() {
-        tasks = sortByDueDate(tasks)
+        _tasks.value = sortByDueDate(_tasks.value)
+    }
+
+    fun selectTask(task: Task) {
+        _selectedTask.value = task
+    }
+
+    fun closeDialog() {
+        _selectedTask.value = null
     }
 }

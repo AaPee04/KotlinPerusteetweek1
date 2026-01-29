@@ -1,4 +1,4 @@
-package com.example.kotlinperusteetweek1.domain
+package com.example.kotlinperusteetweek1.model
 val mockData = listOf(
     Task(
         id = 1,
