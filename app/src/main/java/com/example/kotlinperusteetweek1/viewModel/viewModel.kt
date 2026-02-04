@@ -13,6 +13,9 @@ class TaskViewModel : ViewModel() {
     private val _selectedTask = MutableStateFlow<Task?>(null)
     val selectedTask: StateFlow<Task?> = _selectedTask
 
+    private val _showAddDialog = MutableStateFlow(false)
+    val showAddDialog: StateFlow<Boolean> = _showAddDialog
+
     private var nextId = mockData.maxOf { it.id } + 1
 
     fun addTask(title: String, description: String) {
@@ -27,36 +30,35 @@ class TaskViewModel : ViewModel() {
         _tasks.value = _tasks.value + newTask
     }
 
-
-    fun toggleDone(taskId: Int) {
-        _tasks.value = toggleDone(_tasks.value, taskId)
+    fun openAddDialog() {
+        _showAddDialog.value = true
     }
 
-    fun removeTask(taskId: Int) {
-        _tasks.value = removeTask(_tasks.value, taskId)
-        closeDialog()
+    fun closeAddDialog() {
+        _showAddDialog.value = false
+    }
+
+    fun openTask(taskId: Int) {
+        _selectedTask.value = _tasks.value.find { it.id == taskId }
     }
 
     fun updateTask(updatedTask: Task) {
         _tasks.value = _tasks.value.map {
             if (it.id == updatedTask.id) updatedTask else it
         }
-        closeDialog()
+        closeEditDialog()
     }
 
-    fun getTasksByDone(done: Boolean): List<Task> {
-        return filterByDone(_tasks.value, done)
+    fun removeTask(taskId: Int) {
+        _tasks.value = removeTask(_tasks.value, taskId)
+        closeEditDialog()
     }
 
-    fun sortTasksByDueDate() {
-        _tasks.value = sortByDueDate(_tasks.value)
+    fun toggleDone(taskId: Int) {
+        _tasks.value = toggleDone(_tasks.value, taskId)
     }
 
-    fun selectTask(task: Task) {
-        _selectedTask.value = task
-    }
-
-    fun closeDialog() {
+    fun closeEditDialog() {
         _selectedTask.value = null
     }
 }
