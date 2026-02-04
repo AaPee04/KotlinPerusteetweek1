@@ -36,8 +36,10 @@ fun CalendarScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        TopAppBar(
-            title = { Text("Kalenteri") },
+        CenterAlignedTopAppBar(
+            title = {
+                Text("Kalenteri")
+            },
             navigationIcon = {
                 IconButton(onClick = onNavigateHome) {
                     Icon(
@@ -49,7 +51,6 @@ fun CalendarScreen(
             }
         )
 
-        // 🔁 JÄRJESTYSNAPPI
         Row(
             modifier = Modifier
                 .fillMaxWidth()

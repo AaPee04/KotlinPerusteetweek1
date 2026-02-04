@@ -42,8 +42,10 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Tehtävät") },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("Tehtävät")
+                },
                 actions = {
                     IconButton(onClick = onNavigateCalendar) {
                         Icon(
@@ -54,8 +56,9 @@ fun HomeScreen(
                     }
                 }
             )
-        },
-    ) { padding ->
+        }
+    )
+    { padding ->
 
         Column(
             modifier = Modifier
