@@ -20,3 +20,13 @@ Tällä viikolla lisättiin tehtävään viewModel ja muutamia uusia toiminnalli
 Compose-tilanhallinta on hyvä, koska se on reaktiivinen framework, joten se päivittää listan heti kun listaan lisätään uusia tietoja. Compose toimii staten avulla.
 
 remember toimii vain Composable funktion sisällä, kun taas viewModel toimii koko UI:n elin kaaren ajan. viewModel toimii paljon parempien listojen kanssa kuin remember, joka pää osin toimii vain tekstikenttien kanssa. viewModel on kestävämpi UI-tila kun taas remember on lyhyt aikaisempi UI-tila ettei se pysty olla päällä kovin kauan. viewModel on myös suojattu recompositiolta.
+
+## Week 3
+
+Tällä viikolla tehtiin MVVM-mallia käyttäen
+
+MVVM-malli jakautuu kolmeen osaan Modeliin, Viewiin ja ViewModeliin. Näiden avulla pystytään selvästi erottaa logiikka ja UI toisistaan siten että ne eivät ole sekaisin yhdessä tai kahdessa tiedostossa. MVVM-mallia noudattaa ohjelmaa on Helppo testata, se on Reaktiivinen eli UI-päivittyy automaattisesti ja MVVM-koodia on helpompi laajentaa kuin joitakin toisia koodeja.
+
+StateFlow on Kotlin ruutini, joka mahdollistaa koodin reaktiivisuuden, koska Stateflown avulla koodi päivittää heti tilan kun se muuttuu ja se muuttuu heti aktiiviseksi kun StateFlowta kuunnellaan.
+
+MVVM-mallin, Stateflown ja Jetpack Composen avulla saadan tehokas ja moderni Android sovellus MVVM monien etujen ansiosta.
