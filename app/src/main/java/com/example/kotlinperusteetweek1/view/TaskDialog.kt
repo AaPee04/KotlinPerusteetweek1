@@ -9,10 +9,10 @@ import com.example.kotlinperusteetweek1.model.Task
 
 @Composable
 fun TaskDialog(
-    task: Task?,                     // null = ADD, != null = EDIT
+    task: Task?,
     onDismiss: () -> Unit,
     onSave: (title: String, description: String, dueDate: String) -> Unit,
-    onDelete: (() -> Unit)? = null    // vain editissä
+    onDelete: (() -> Unit)? = null
 ) {
     var title by remember { mutableStateOf(task?.title ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
@@ -23,7 +23,7 @@ fun TaskDialog(
         title = {
             Text(if (task == null) "Add task" else "Edit task")
         },
-        text = {
+        text = { // Teksti kentät
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = title,
@@ -45,7 +45,7 @@ fun TaskDialog(
                 )
             }
         },
-        confirmButton = {
+        confirmButton = { // Tallenna
             Button(
                 onClick = {
                     onSave(title, description, dueDate)
@@ -58,11 +58,11 @@ fun TaskDialog(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (onDelete != null) {
                     TextButton(onClick = onDelete) {
-                        Text("Delete")
+                        Text("Delete") // Poista
                     }
                 }
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text("Cancel") // Peru
                 }
             }
         }

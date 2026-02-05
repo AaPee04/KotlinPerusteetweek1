@@ -70,7 +70,7 @@ fun CalendarScreen(
                 )
             ) {
                 Text(
-                    if (ascending)
+                    if (ascending) // DueDate sort
                         "Järjestä: uusin → vanhin"
                     else
                         "Järjestä: vanhin → uusin"

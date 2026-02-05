@@ -41,7 +41,7 @@ fun HomeScreen(
 
     val accent = MaterialTheme.colorScheme.primary
 
-    Scaffold(
+    Scaffold( // Napit navigointia varten
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -50,7 +50,7 @@ fun HomeScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateSettings) {
                         Icon(
-                            imageVector = Icons.Filled.Settings,
+                            imageVector = Icons.Filled.Settings, // SettinsScreen
                             contentDescription = "Settings",
                             tint = accent
                         )
@@ -59,7 +59,7 @@ fun HomeScreen(
                 actions = {
                     IconButton(onClick = onNavigateCalendar) {
                         Icon(
-                            imageVector = Icons.Filled.CalendarMonth,
+                            imageVector = Icons.Filled.CalendarMonth, // CalendarScreen
                             contentDescription = "Calendar",
                             tint = accent
                         )
@@ -92,7 +92,7 @@ fun HomeScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text("➕ Lisää tehtävä")
+                    Text("➕ Lisää tehtävä") // Lisää tehtävä kutsuu TaskDialogissa AddTask
                 }
 
                 OutlinedButton(
@@ -106,7 +106,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         if (hideUndone) "Näytä tekemättömät"
-                        else "Piilota tekemättömät"
+                        else "Piilota tekemättömät" // Piilottaa tekemättömät ja tuo ne takas
                     )
                 }
 
@@ -174,7 +174,7 @@ fun HomeScreen(
         }
     }
 
-    if (showAddDialog) {
+    if (showAddDialog) { // AddTaskin kutsu
         TaskDialog(
             task = null,
             onDismiss = { viewModel.closeAddDialog() },
@@ -186,7 +186,7 @@ fun HomeScreen(
     }
 
 
-    selectedTask?.let { task ->
+    selectedTask?.let { task -> // Taskin muokkauksen kutsu
         TaskDialog(
             task = task,
             onDismiss = { viewModel.closeEditDialog() },

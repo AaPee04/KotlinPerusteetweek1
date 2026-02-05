@@ -50,7 +50,7 @@ fun SettingsScreen(
             )
 
             Button(
-                onClick = onToggleTheme,
+                onClick = onToggleTheme, // Teeman vaihto
                 colors = ButtonDefaults.buttonColors(
                     containerColor = accent,
                     contentColor = Color.White
