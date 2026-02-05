@@ -18,13 +18,13 @@ class TaskViewModel : ViewModel() {
 
     private var nextId = mockData.maxOf { it.id } + 1
 
-    fun addTask(title: String, description: String) {
+    fun addTask(title: String, description: String, dueDate: String) {
         val newTask = Task(
             id = nextId++,
             title = title,
             description = description,
             priority = 1,
-            dueDate = "2026.2.10",
+            dueDate = dueDate,
             done = false
         )
         _tasks.value = _tasks.value + newTask

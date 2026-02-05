@@ -13,9 +13,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.Typography
 
 @Composable
-fun MyAppTheme(content: @Composable () -> Unit) {
+fun MyAppTheme(
+    darkTheme: Boolean = true,
+    content: @Composable () -> Unit
+) {
     MaterialTheme(
-        colorScheme = DarkColors,
+        colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = Typography(),
         content = content
     )

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,9 +24,10 @@ fun CalendarScreen(
     onNavigateHome: () -> Unit
 ) {
     val tasks by viewModel.tasks.collectAsState()
+    val selectedTask by viewModel.selectedTask.collectAsState()
 
     var ascending by remember { mutableStateOf(true) }
-    val red = Color.Red
+    val accent = MaterialTheme.colorScheme.primary
 
     val groupedTasks = tasks
         .groupBy { it.dueDate ?: "No date" }
@@ -43,9 +45,9 @@ fun CalendarScreen(
             navigationIcon = {
                 IconButton(onClick = onNavigateHome) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = Icons.Filled.List,
                         contentDescription = "Back",
-                        tint = red
+                        tint = accent
                     )
                 }
             }
@@ -61,10 +63,10 @@ fun CalendarScreen(
             OutlinedButton(
                 onClick = { ascending = !ascending },
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = red
+                    contentColor = accent
                 ),
                 border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = SolidColor(red)
+                    brush = SolidColor(accent)
                 )
             ) {
                 Text(
@@ -88,7 +90,7 @@ fun CalendarScreen(
                         text = date,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(vertical = 8.dp),
-                        color = red
+                        color = accent
                     )
                 }
 
@@ -119,7 +121,7 @@ fun CalendarScreen(
                                 Text(
                                     text = "✓ Valmis",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = red
+                                    color = accent
                                 )
                             }
                         }
@@ -127,5 +129,23 @@ fun CalendarScreen(
                 }
             }
         }
+    }
+    selectedTask?.let { task ->
+        TaskDialog(
+            task = task,
+            onDismiss = { viewModel.closeEditDialog() },
+            onSave = { title, description, dueDate ->
+                viewModel.updateTask(
+                    task.copy(
+                        title = title,
+                        description = description,
+                        dueDate = dueDate
+                    )
+                )
+            },
+            onDelete = {
+                viewModel.removeTask(task.id)
+            }
+        )
     }
 }

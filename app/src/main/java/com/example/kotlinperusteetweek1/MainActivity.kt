@@ -10,6 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import com.example.kotlinperusteetweek1.view.HomeScreen
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -17,8 +21,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlinperusteetweek1.navigation.ROUTE_CALENDAR
 import com.example.kotlinperusteetweek1.navigation.ROUTE_HOME
+import com.example.kotlinperusteetweek1.navigation.ROUTE_SETTINGS
 import com.example.kotlinperusteetweek1.ui.theme.MyAppTheme
 import com.example.kotlinperusteetweek1.view.CalendarScreen
+import com.example.kotlinperusteetweek1.view.SettingsScreen
 import com.example.kotlinperusteetweek1.viewModel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,35 +36,44 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val viewModel: TaskViewModel = viewModel()
 
-            MyAppTheme {
+            var darkTheme by remember { mutableStateOf(true) }
+
+            MyAppTheme(darkTheme = darkTheme) {
                 Scaffold { padding ->
                     NavHost(
                         navController = navController,
-                        startDestination = ROUTE_HOME,
+                        startDestination = "home",
                         modifier = Modifier.padding(padding)
                     ) {
 
-                        composable(ROUTE_HOME) {
+                        composable("home") {
                             HomeScreen(
                                 viewModel = viewModel,
-                                onTaskClick = { id ->
-                                    viewModel.openTask(id)
-                                },
-                                onAddClick = {
-                                    viewModel.openAddDialog()
-                                },
+                                onTaskClick = { viewModel.openTask(it) },
+                                onAddClick = { viewModel.openAddDialog() },
                                 onNavigateCalendar = {
-                                    navController.navigate(ROUTE_CALENDAR)
+                                    navController.navigate("calendar")
+                                },
+                                onNavigateSettings = {
+                                    navController.navigate("settings")
                                 }
                             )
                         }
 
-                        composable(ROUTE_CALENDAR) {
+                        composable("calendar") {
                             CalendarScreen(
                                 viewModel = viewModel,
-                                onTaskClick = { id ->
-                                    viewModel.openTask(id)
-                                },
+                                onTaskClick = { viewModel.openTask(it) },
+                                onNavigateHome = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+
+                        composable("settings") {
+                            SettingsScreen(
+                                darkTheme = darkTheme,
+                                onToggleTheme = { darkTheme = !darkTheme },
                                 onNavigateHome = {
                                     navController.popBackStack()
                                 }

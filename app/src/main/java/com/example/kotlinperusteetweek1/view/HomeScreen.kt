@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import com.example.kotlinperusteetweek1.viewModel.DetailDialog
 import com.example.kotlinperusteetweek1.viewModel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,21 +23,23 @@ fun HomeScreen(
     viewModel: TaskViewModel,
     onTaskClick: (Int) -> Unit = {},
     onAddClick: () -> Unit = {},
-    onNavigateCalendar: () -> Unit = {}
+    onNavigateCalendar: () -> Unit = {},
+    onNavigateSettings: () -> Unit = {}
 ) {
     val tasks by viewModel.tasks.collectAsState()
     val selectedTask by viewModel.selectedTask.collectAsState()
     val showAddDialog by viewModel.showAddDialog.collectAsState()
 
-    var hideDone by remember { mutableStateOf(false) }
+    var hideUndone by remember { mutableStateOf(false) }
 
-    val visibleTasks = if (hideDone) {
-        tasks.filter { !it.done }
+    val visibleTasks = if (hideUndone) {
+        tasks.filter { it.done }
     } else {
         tasks
     }
 
-    val red = Color.Red
+
+    val accent = MaterialTheme.colorScheme.primary
 
     Scaffold(
         topBar = {
@@ -46,16 +47,26 @@ fun HomeScreen(
                 title = {
                     Text("Tehtävät")
                 },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateSettings) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Settings",
+                            tint = accent
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onNavigateCalendar) {
                         Icon(
                             imageVector = Icons.Filled.CalendarMonth,
                             contentDescription = "Calendar",
-                            tint = red
+                            tint = accent
                         )
                     }
                 }
             )
+
         }
     )
     { padding ->
@@ -66,7 +77,6 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
 
-            // 🔘 ACTION BUTTONS
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,7 +88,7 @@ fun HomeScreen(
                 Button(
                     onClick = onAddClick,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = red,
+                        containerColor = accent,
                         contentColor = Color.White
                     )
                 ) {
@@ -86,22 +96,22 @@ fun HomeScreen(
                 }
 
                 OutlinedButton(
-                    onClick = { hideDone = !hideDone },
+                    onClick = { hideUndone = !hideUndone },
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = red
+                        contentColor = accent
                     ),
                     border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = SolidColor(red)
+                        brush = SolidColor(accent)
                     )
                 ) {
                     Text(
-                        if (hideDone) "Näytä tehdyt"
-                        else "Piilota tehdyt"
+                        if (hideUndone) "Näytä tekemättömät"
+                        else "Piilota tekemättömät"
                     )
                 }
+
             }
 
-            // 📋 TASK LIST
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
@@ -152,8 +162,8 @@ fun HomeScreen(
                                     viewModel.toggleDone(task.id)
                                 },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = red,
-                                    uncheckedColor = red,
+                                    checkedColor = accent,
+                                    uncheckedColor = accent,
                                     checkmarkColor = Color.White
                                 )
                             )
@@ -164,24 +174,35 @@ fun HomeScreen(
         }
     }
 
-    // ➕ ADD TASK DIALOG
     if (showAddDialog) {
-        AddDialog(
+        TaskDialog(
+            task = null,
             onDismiss = { viewModel.closeAddDialog() },
-            onSave = { title, description ->
-                viewModel.addTask(title, description)
+            onSave = { title, description, dueDate ->
+                viewModel.addTask(title, description, dueDate)
                 viewModel.closeAddDialog()
             }
         )
     }
 
-    // ✏️ EDIT TASK DIALOG
+
     selectedTask?.let { task ->
-        DetailDialog(
+        TaskDialog(
             task = task,
-            onClose = { viewModel.closeEditDialog() },
-            onUpdate = { viewModel.updateTask(it) },
-            onDelete = { viewModel.removeTask(task.id) }
+            onDismiss = { viewModel.closeEditDialog() },
+            onSave = { title, description, dueDate ->
+                viewModel.updateTask(
+                    task.copy(
+                        title = title,
+                        description = description,
+                        dueDate = dueDate
+                    )
+                )
+            },
+            onDelete = {
+                viewModel.removeTask(task.id)
+            }
         )
     }
+
 }
