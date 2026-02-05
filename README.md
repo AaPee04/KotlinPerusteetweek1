@@ -30,3 +30,34 @@ MVVM-malli jakautuu kolmeen osaan Modeliin, Viewiin ja ViewModeliin. Näiden avu
 StateFlow on Kotlin ruutini, joka mahdollistaa koodin reaktiivisuuden, koska Stateflown avulla koodi päivittää heti tilan kun se muuttuu ja se muuttuu heti aktiiviseksi kun StateFlowta kuunnellaan.
 
 MVVM-mallin, Stateflown ja Jetpack Composen avulla saadan tehokas ja moderni Android sovellus MVVM monien etujen ansiosta.
+
+## Week 4
+
+Viikko 4 lisättiin navigaatiota Kotlin Appiin
+
+#### Navigoingti Jetpack Composessa
+Navigointi Jetpack Composessa on sitä, että eri näkymien välillä liikutaan Navigatio-compose kirjaston avulla ilman monia Activityjä. Tällä tavalla kaikki on yhden Activityn sisällä. 
+
+#### NavHost ja NavController
+NavCotroller vastaa navigoinnin ohjaamisesta. Sillä siirrytään näkymästä toiseen ja palataan takaisin
+NavHost määrittelee sovelluksen navigaatiorakenteen. Se kertoo mitkä näkymät ovat osa navigaatiota ja määrittelee aloitusnäkymän.
+
+#### Sovelluksen Navigaatio
+HomeScreen on vakionapäänäkymä, josta pystytään vaihtaa toiseen päänäkymään CaledarScreen. 
+Navigointi hoidetaan HomeScreenin TopBarissa ja CalendarScreenissä on lista-ikoni jolla hoidetaan navigaatio takaisin HomeScreeniin.
+
+#### MVVM ja Navigointi
+Sovelluksessa käytetään vain yhtä ViewModelia jota käytetään molemmissa HomeScreenissä ja CalendarScreenissä, joten kaikki ruudut toimivat samassa tilassa ja muutokset näkyvät heti molemmissa tiloissa.
+
+#### ViewModel tilan jako
+ViewModel sisältää tilan StateFlow-muodossa. HomeScreen ja CalendarScreen molemmat lukevat tilan CollectAsStaten avulla. Kun lisätään tai muokataan tehtävä, ViewModel päivittää tilan ja Compose päivittää heti näkymät
+
+#### CalendarScreen
+CalendarScreen on toteutettu dueDaten mukaan siten, että päivämäärät ovat Otsikkoina ja title ja description ovat jokaisen jälkeen omassa boxissaan. CalendarScreeniin on myös toteutettu nappi jolla voidaan järjestellä dueDaten mukaan vanhin tai uusin ensin.
+
+#### AlertDialog addTask ja editTask
+tehtävien lisäys ja muokkaus hoidetaan AlertDialog.kt:n avulla:
+addTask toimiii HomeScreenistä Lisää tehtävä napista.
+Dialogissa sitten pistetään title, description ja dueDate. Tallenna nappi Dialogissa kutsuu viewModelin Addtaskiä. Peruuta sulkee dialogin.
+
+EditTask avataan painamalla olemassa olevaa tehtävää, Teksti kentät ovat samat kuin AddTaskissä. Tallenna nappi kutsuu viewModel.updateTask, Poista kutsuu viewModel.removeTask ja peruuta sulkee Dialogin ilman mitään muutoksia taskiin.
